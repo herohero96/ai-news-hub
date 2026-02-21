@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Article {
+  id          Int      @id @default(autoincrement())
+  title       String
+  summary     String
+  url         String   @unique
+  source      String
+  category    String
+  publishedAt DateTime
+  pushed      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}

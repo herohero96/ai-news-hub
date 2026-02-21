@@ -1,0 +1,9 @@
+## AI News Hub - 开发进度
+
+### Task 1: 初始化 Next.js 项目结构，配置 Tailwind CSS 和 Prisma ✅
+- Next.js 16 + TypeScript + Tailwind CSS + App Router 已配置
+- Prisma v7 + SQLite 已配置，Article 模型已定义
+- 修复 lib/prisma.ts 中 Prisma v7 生成客户端的导入路径问题
+- npm run build 通过
+
+### Task 2-8: 待完成

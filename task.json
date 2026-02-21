@@ -9,7 +9,7 @@
       "运行 npx prisma db push 初始化数据库",
       "确保 npm run build 通过"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": 2,
