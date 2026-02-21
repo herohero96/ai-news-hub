@@ -1,0 +1,94 @@
+[
+  {
+    "id": 1,
+    "description": "初始化 Next.js 项目结构，配置 Tailwind CSS 和 Prisma",
+    "steps": [
+      "用 create-next-app 创建项目（TypeScript + Tailwind + App Router）",
+      "安装 Prisma、@prisma/client、sqlite3",
+      "配置 prisma/schema.prisma，定义 Article、Category 模型",
+      "运行 npx prisma db push 初始化数据库",
+      "确保 npm run build 通过"
+    ],
+    "passes": false
+  },
+  {
+    "id": 2,
+    "description": "实现资讯抓取脚本，支持多来源抓取并存入数据库",
+    "steps": [
+      "创建 scripts/fetch-news.ts",
+      "抓取来源：aivi.fyi、simonwillison.net、anthropic.com/news、blog.google/technology/ai",
+      "解析文章标题、摘要、链接、来源、发布时间",
+      "去重（按 URL），存入数据库",
+      "支持分类：Claude、OpenAI、Google、其他"
+    ],
+    "passes": false
+  },
+  {
+    "id": 3,
+    "description": "实现首页，展示最新资讯列表，支持分类筛选",
+    "steps": [
+      "创建首页 app/page.tsx",
+      "展示资讯卡片：标题、摘要、来源、时间、分类标签",
+      "顶部分类导航栏（全部、Claude、OpenAI、Google、其他）",
+      "点击分类过滤资讯",
+      "响应式布局，移动端友好"
+    ],
+    "passes": false
+  },
+  {
+    "id": 4,
+    "description": "实现搜索功能",
+    "steps": [
+      "顶部搜索框，输入关键词实时搜索",
+      "搜索标题和摘要",
+      "高亮显示匹配关键词",
+      "无结果时显示友好提示"
+    ],
+    "passes": false
+  },
+  {
+    "id": 5,
+    "description": "实现资讯详情页",
+    "steps": [
+      "创建 app/article/[id]/page.tsx",
+      "展示完整内容：标题、来源、时间、正文",
+      "底部「查看原文」按钮跳转原链接",
+      "面包屑导航返回首页"
+    ],
+    "passes": false
+  },
+  {
+    "id": 6,
+    "description": "实现 Telegram 推送功能",
+    "steps": [
+      "创建 scripts/push-telegram.ts",
+      "读取最新未推送的资讯",
+      "格式化成 Markdown 消息发送到 Telegram",
+      "标记已推送，避免重复",
+      "支持命令行手动触发"
+    ],
+    "passes": false
+  },
+  {
+    "id": 7,
+    "description": "配置 Supabase 数据库，替换本地 SQLite",
+    "steps": [
+      "修改 prisma/schema.prisma 改用 postgresql",
+      "配置 DATABASE_URL 环境变量",
+      "运行 prisma db push 同步到 Supabase",
+      "确保抓取脚本和 Next.js 都能正常连接"
+    ],
+    "passes": false
+  },
+  {
+    "id": 8,
+    "description": "部署到 Vercel，配置环境变量",
+    "steps": [
+      "创建 GitHub 仓库并推送代码",
+      "在 Vercel 导入项目",
+      "配置 DATABASE_URL 等环境变量",
+      "确保生产环境构建成功"
+    ],
+    "passes": false
+  }
+]
