@@ -15,4 +15,13 @@
 - 修复 lib/prisma.ts 使用 Prisma v7 driver adapter 模式（PrismaBetterSqlite3）
 - npm run lint && npm run build 通过
 
-### Task 3-8: 待完成
+### Task 3: 实现首页，展示最新资讯列表，支持分类筛选 ✅
+- 创建 app/page.tsx，服务端渲染，从数据库读取文章列表
+- 创建 components/CategoryNav.tsx，顶部分类导航（全部/Claude/OpenAI/Google/其他）
+- 创建 components/ArticleCard.tsx，资讯卡片（标题、摘要、来源、时间、分类标签）
+- 通过 URL searchParams (?category=xxx) 实现分类过滤
+- 响应式布局，移动端友好，支持暗色模式
+- 空状态友好提示
+- npm run lint && npm run build 通过
+
+### Task 4-8: 待完成
