@@ -34,4 +34,13 @@
 - 更新 app/page.tsx 使用 ArticleList 替代直接渲染卡片
 - npm run lint && npm run build 通过
 
-### Task 5-8: 待完成
+### Task 5: 实现资讯详情页 ✅
+- 创建 app/article/[id]/page.tsx，服务端渲染
+- 展示完整内容：标题、来源、时间、摘要
+- 分类标签带颜色区分
+- 底部「查看原文」按钮跳转原链接（新标签页打开）
+- 面包屑导航（首页 / 文章标题）及返回首页链接
+- 404 处理（文章不存在时 notFound()）
+- npm run lint && npm run build 通过
+
+### Task 6-8: 待完成
