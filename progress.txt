@@ -24,4 +24,14 @@
 - 空状态友好提示
 - npm run lint && npm run build 通过
 
-### Task 4-8: 待完成
+### Task 4: 实现搜索功能 ✅
+- 创建 components/SearchBar.tsx，带清除按钮的搜索输入框
+- 创建 components/ArticleList.tsx，客户端组件，处理搜索过滤和关键词高亮
+- 搜索标题和摘要（大小写不敏感）
+- 使用 <mark> 标签高亮匹配关键词
+- 无结果时显示友好提示，支持一键清除搜索
+- 显示搜索结果数量
+- 更新 app/page.tsx 使用 ArticleList 替代直接渲染卡片
+- npm run lint && npm run build 通过
+
+### Task 5-8: 待完成
