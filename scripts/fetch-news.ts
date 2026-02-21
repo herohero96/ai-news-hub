@@ -162,6 +162,261 @@ async function fetchAnthropic(): Promise<ArticleInput[]> {
   }).slice(0, 20);
 }
 
+async function fetchHuggingFaceBlog(): Promise<ArticleInput[]> {
+  const articles: ArticleInput[] = [];
+  try {
+    const res = await fetch("https://huggingface.co/blog", {
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; AINewsBot/1.0)" },
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const html = await res.text();
+    const $ = cheerio.load(html);
+
+    $("article, .blog-post, [class*='blog']").each((_, el) => {
+      const linkEl = $(el).find("a").first();
+      const href = linkEl.attr("href");
+      const title =
+        $(el).find("h1, h2, h3").first().text().trim() ||
+        linkEl.text().trim();
+      if (!title || title.length < 5 || !href) return;
+      const url = href.startsWith("http")
+        ? href
+        : `https://huggingface.co${href}`;
+      const summary =
+        $(el).find("p, .description, .excerpt").first().text().trim() || title;
+      const dateStr = $(el).find("time").attr("datetime") || $(el).find("time").text().trim();
+      articles.push({
+        title,
+        summary: summary.slice(0, 500),
+        url,
+        source: "huggingface.co",
+        category: "开源",
+        publishedAt: dateStr ? new Date(dateStr) : new Date(),
+      });
+    });
+
+    // fallback: grab /blog/* links
+    if (articles.length === 0) {
+      $("a[href^='/blog/']").each((_, el) => {
+        const href = $(el).attr("href")!;
+        if (href === "/blog" || href === "/blog/") return;
+        const title = $(el).text().trim();
+        if (!title || title.length < 5) return;
+        const url = `https://huggingface.co${href}`;
+        articles.push({
+          title,
+          summary: title,
+          url,
+          source: "huggingface.co",
+          category: "开源",
+          publishedAt: new Date(),
+        });
+      });
+    }
+  } catch (e) {
+    console.warn("[huggingface.co] 抓取失败:", (e as Error).message);
+  }
+  const seen = new Set<string>();
+  return articles
+    .filter((a) => {
+      if (seen.has(a.url)) return false;
+      seen.add(a.url);
+      return true;
+    })
+    .slice(0, 20);
+}
+
+async function fetchVergeAI(): Promise<ArticleInput[]> {
+  const articles: ArticleInput[] = [];
+  try {
+    // Try RSS first
+    const feed = await rss.parseURL("https://www.theverge.com/ai-artificial-intelligence/rss/index.xml");
+    for (const item of feed.items.slice(0, 20)) {
+      if (!item.title || !item.link) continue;
+      articles.push({
+        title: item.title,
+        summary: (item.contentSnippet || item.summary || item.title).slice(0, 500),
+        url: item.link,
+        source: "theverge.com",
+        category: "科技媒体",
+        publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
+      });
+    }
+  } catch {
+    // RSS failed, fall back to HTML scraping
+    try {
+      const res = await fetch("https://www.theverge.com/ai-artificial-intelligence", {
+        headers: { "User-Agent": "Mozilla/5.0 (compatible; AINewsBot/1.0)" },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const html = await res.text();
+      const $ = cheerio.load(html);
+
+      $("article, h2 a, h3 a").each((_, el) => {
+        const linkEl = $(el).is("a") ? $(el) : $(el).find("a").first();
+        const href = linkEl.attr("href");
+        const title =
+          $(el).find("h2, h3").first().text().trim() || linkEl.text().trim();
+        if (!title || title.length < 5 || !href) return;
+        const url = href.startsWith("http")
+          ? href
+          : `https://www.theverge.com${href}`;
+        const summary =
+          $(el).find("p").first().text().trim() || title;
+        const dateStr = $(el).find("time").attr("datetime");
+        articles.push({
+          title,
+          summary: summary.slice(0, 500),
+          url,
+          source: "theverge.com",
+          category: "科技媒体",
+          publishedAt: dateStr ? new Date(dateStr) : new Date(),
+        });
+      });
+    } catch (e2) {
+      console.warn("[theverge.com] 抓取失败:", (e2 as Error).message);
+    }
+  }
+  const seen = new Set<string>();
+  return articles
+    .filter((a) => {
+      if (seen.has(a.url)) return false;
+      seen.add(a.url);
+      return true;
+    })
+    .slice(0, 20);
+}
+
+async function fetchQbitai(): Promise<ArticleInput[]> {
+  const articles: ArticleInput[] = [];
+  try {
+    // Try RSS first
+    const feed = await rss.parseURL("https://www.qbitai.com/feed");
+    for (const item of feed.items.slice(0, 20)) {
+      if (!item.title || !item.link) continue;
+      articles.push({
+        title: item.title,
+        summary: (item.contentSnippet || item.summary || item.title).slice(0, 500),
+        url: item.link,
+        source: "qbitai.com",
+        category: "中文",
+        publishedAt: item.pubDate ? new Date(item.pubDate) : new Date(),
+      });
+    }
+  } catch {
+    try {
+      const res = await fetch("https://www.qbitai.com", {
+        headers: { "User-Agent": "Mozilla/5.0 (compatible; AINewsBot/1.0)" },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const html = await res.text();
+      const $ = cheerio.load(html);
+
+      $("article, .post, .entry, h2 a, h3 a").each((_, el) => {
+        const linkEl = $(el).is("a") ? $(el) : $(el).find("a").first();
+        const href = linkEl.attr("href");
+        const title =
+          $(el).find("h2, h3").first().text().trim() || linkEl.text().trim();
+        if (!title || title.length < 5 || !href) return;
+        const url = href.startsWith("http")
+          ? href
+          : `https://www.qbitai.com${href}`;
+        const summary =
+          $(el).find("p, .excerpt").first().text().trim() || title;
+        const dateStr = $(el).find("time").attr("datetime") || $(el).find(".date, .time").text().trim();
+        articles.push({
+          title,
+          summary: summary.slice(0, 500),
+          url,
+          source: "qbitai.com",
+          category: "中文",
+          publishedAt: dateStr ? new Date(dateStr) : new Date(),
+        });
+      });
+    } catch (e2) {
+      console.warn("[qbitai.com] 抓取失败:", (e2 as Error).message);
+    }
+  }
+  const seen = new Set<string>();
+  return articles
+    .filter((a) => {
+      if (seen.has(a.url)) return false;
+      seen.add(a.url);
+      return true;
+    })
+    .slice(0, 20);
+}
+
+async function fetchJiqizhixin(): Promise<ArticleInput[]> {
+  const articles: ArticleInput[] = [];
+  try {
+    const res = await fetch("https://www.jiqizhixin.com", {
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; AINewsBot/1.0)" },
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const html = await res.text();
+    const $ = cheerio.load(html);
+
+    $("article, .article-item, .post-item, [class*='article']").each((_, el) => {
+      const linkEl = $(el).find("a").first();
+      const href = linkEl.attr("href");
+      const title =
+        $(el).find("h1, h2, h3").first().text().trim() || linkEl.text().trim();
+      if (!title || title.length < 5 || !href) return;
+      const url = href.startsWith("http")
+        ? href
+        : `https://www.jiqizhixin.com${href}`;
+      const summary =
+        $(el).find("p, .summary, .excerpt, .description").first().text().trim() || title;
+      const dateStr =
+        $(el).find("time").attr("datetime") ||
+        $(el).find(".date, .time, .publish-time").text().trim();
+      articles.push({
+        title,
+        summary: summary.slice(0, 500),
+        url,
+        source: "jiqizhixin.com",
+        category: "中文",
+        publishedAt: dateStr ? new Date(dateStr) : new Date(),
+      });
+    });
+
+    // fallback: grab article links
+    if (articles.length === 0) {
+      $("a[href*='/articles/']").each((_, el) => {
+        const href = $(el).attr("href")!;
+        const title = $(el).text().trim();
+        if (!title || title.length < 5) return;
+        const url = href.startsWith("http")
+          ? href
+          : `https://www.jiqizhixin.com${href}`;
+        articles.push({
+          title,
+          summary: title,
+          url,
+          source: "jiqizhixin.com",
+          category: "中文",
+          publishedAt: new Date(),
+        });
+      });
+    }
+  } catch (e) {
+    console.warn("[jiqizhixin.com] 抓取失败:", (e as Error).message);
+  }
+  const seen = new Set<string>();
+  return articles
+    .filter((a) => {
+      if (seen.has(a.url)) return false;
+      seen.add(a.url);
+      return true;
+    })
+    .slice(0, 20);
+}
+
 async function fetchGoogleAI(): Promise<ArticleInput[]> {
   const articles: ArticleInput[] = [];
   try {
@@ -240,19 +495,27 @@ async function saveArticles(articles: ArticleInput[]): Promise<number> {
 async function main() {
   console.log("🚀 开始抓取 AI 资讯...\n");
 
-  const [aivi, simon, anthropic, google] = await Promise.all([
+  const [aivi, simon, anthropic, google, huggingface, verge, qbitai, jiqizhixin] = await Promise.all([
     fetchAiviFyi(),
     fetchSimonWillison(),
     fetchAnthropic(),
     fetchGoogleAI(),
+    fetchHuggingFaceBlog(),
+    fetchVergeAI(),
+    fetchQbitai(),
+    fetchJiqizhixin(),
   ]);
 
   console.log(`📰 aivi.fyi:          ${aivi.length} 篇`);
   console.log(`📰 simonwillison.net: ${simon.length} 篇`);
   console.log(`📰 anthropic.com:     ${anthropic.length} 篇`);
   console.log(`📰 blog.google:       ${google.length} 篇`);
+  console.log(`📰 huggingface.co:    ${huggingface.length} 篇`);
+  console.log(`📰 theverge.com:      ${verge.length} 篇`);
+  console.log(`📰 qbitai.com:        ${qbitai.length} 篇`);
+  console.log(`📰 jiqizhixin.com:    ${jiqizhixin.length} 篇`);
 
-  const all = [...aivi, ...simon, ...anthropic, ...google];
+  const all = [...aivi, ...simon, ...anthropic, ...google, ...huggingface, ...verge, ...qbitai, ...jiqizhixin];
   console.log(`\n📦 合计: ${all.length} 篇，开始去重存库...`);
 
   const saved = await saveArticles(all);
