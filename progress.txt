@@ -6,4 +6,13 @@
 - 修复 lib/prisma.ts 中 Prisma v7 生成客户端的导入路径问题
 - npm run build 通过
 
-### Task 2-8: 待完成
+### Task 2: 实现资讯抓取脚本，支持多来源抓取并存入数据库 ✅
+- 创建 scripts/fetch-news.ts
+- 支持 4 个来源：aivi.fyi（HTML）、simonwillison.net（RSS）、anthropic.com（HTML）、blog.google（RSS+HTML fallback）
+- 自动分类：Claude / OpenAI / Google / 其他
+- 按 URL 去重，upsert 存入数据库
+- 安装 cheerio、rss-parser、tsx、@prisma/adapter-better-sqlite3、better-sqlite3
+- 修复 lib/prisma.ts 使用 Prisma v7 driver adapter 模式（PrismaBetterSqlite3）
+- npm run lint && npm run build 通过
+
+### Task 3-8: 待完成

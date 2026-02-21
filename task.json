@@ -21,7 +21,7 @@
       "去重（按 URL），存入数据库",
       "支持分类：Claude、OpenAI、Google、其他"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": 3,
