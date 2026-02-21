@@ -78,7 +78,7 @@
       "运行 prisma db push 同步到 Supabase",
       "确保抓取脚本和 Next.js 都能正常连接"
     ],
-    "passes": false
+    "passes": true
   },
   {
     "id": 8,

@@ -53,4 +53,12 @@
 - 未配置环境变量时优雅降级（打印警告不崩溃）
 - npm run lint && npm run build 通过
 
-### Task 7-8: 待完成
+### Task 7: 配置 Supabase 数据库，替换本地 SQLite ✅
+- 修改 prisma/schema.prisma 改用 postgresql provider
+- 更新 .env DATABASE_URL 为 Supabase pooler 连接字符串
+- 安装 @prisma/adapter-pg，更新 lib/prisma.ts 使用 PrismaPg driver adapter（Prisma v7 要求）
+- 修复 lib/prisma.ts 构造函数类型问题
+- npx prisma generate && npx prisma db push 成功同步 schema 到 Supabase
+- npm run build 通过
+
+### Task 8: 待完成
